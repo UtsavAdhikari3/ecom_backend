@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Register</title>
+    <script
+      src="https://unpkg.com/react@18/umd/react.development.js"
+      crossorigin
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+      crossorigin
+    ></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      class RegistrationPage extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            username: "",
+            email: "",
+            password: "",
+            loading: false,
+            successMsg: "",
+            errorMsg: "",
+          };
+        }
+
+        handleChange = (e) => {
+          this.setState({ [e.target.name]: e.target.value });
+        };
+
+        handleSubmit = async (e) => {
+          e.preventDefault();
+          const { username, email, password } = this.state;
+
+          this.setState({ loading: true, successMsg: "", errorMsg: "" });
+
+          try {
+            const response = await fetch(
+              "http://localhost:8000/api/users/register/",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, email, password }),
+              }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+              throw new Error(data.message || "Registration failed.");
+            }
+
+            this.setState({
+              successMsg: "Account created successfully!",
+              username: "",
+              email: "",
+              password: "",
+            });
+          } catch (err) {
+            this.setState({ errorMsg: err.message });
+          } finally {
+            this.setState({ loading: false });
+          }
+        };
+
+        render() {
+          const { username, email, password, loading, successMsg, errorMsg } =
+            this.state;
+
+          return (
+            <div style={styles.wrapper}>
+              <div style={styles.card}>
+                <h2 style={styles.title}>Create account</h2>
+                <p style={styles.subtitle}>
+                  Fill in your details to get started
+                </p>
+
+                <form onSubmit={this.handleSubmit}>
+                  <div style={styles.field}>
+                    <label style={styles.label}>Username</label>
+                    <input
+                      style={styles.input}
+                      type="text"
+                      name="username"
+                      value={username}
+                      onChange={this.handleChange}
+                      placeholder="johndoe"
+                      required
+                    />
+                  </div>
+
+                  <div style={styles.field}>
+                    <label style={styles.label}>Email address</label>
+                    <input
+                      style={styles.input}
+                      type="email"
+                      name="email"
+                      value={email}
+                      onChange={this.handleChange}
+                      placeholder="john@example.com"
+                      required
+                    />
+                  </div>
+
+                  <div style={styles.field}>
+                    <label style={styles.label}>Password</label>
+                    <input
+                      style={styles.input}
+                      type="password"
+                      name="password"
+                      value={password}
+                      onChange={this.handleChange}
+                      placeholder="Min. 8 characters"
+                      minLength={8}
+                      required
+                    />
+                  </div>
+
+                  {successMsg && <p style={styles.success}>{successMsg}</p>}
+                  {errorMsg && <p style={styles.error}>{errorMsg}</p>}
+
+                  <button
+                    type="submit"
+                    style={styles.button}
+                    disabled={loading}
+                  >
+                    {loading ? "Registering…" : "Register"}
+                  </button>
+                </form>
+              </div>
+            </div>
+          );
+        }
+      }
+
+      const styles = {
+        wrapper: {
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+          fontFamily: "system-ui, sans-serif",
+          background: "#f5f5f5",
+        },
+        card: {
+          background: "#fff",
+          borderRadius: 12,
+          padding: "2rem",
+          width: "100%",
+          maxWidth: 420,
+          boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
+        },
+        title: { margin: "0 0 4px", fontSize: 22, fontWeight: 500 },
+        subtitle: { margin: "0 0 1.5rem", fontSize: 14, color: "#666" },
+        field: { marginBottom: "1rem" },
+        label: {
+          display: "block",
+          fontSize: 13,
+          fontWeight: 500,
+          color: "#555",
+          marginBottom: 5,
+        },
+        input: {
+          width: "100%",
+          height: 38,
+          padding: "0 10px",
+          fontSize: 14,
+          border: "1px solid #ddd",
+          borderRadius: 8,
+          outline: "none",
+          boxSizing: "border-box",
+        },
+        button: {
+          marginTop: "0.5rem",
+          width: "100%",
+          height: 40,
+          background: "#534AB7",
+          color: "#fff",
+          border: "none",
+          borderRadius: 8,
+          fontSize: 14,
+          fontWeight: 500,
+          cursor: "pointer",
+        },
+        success: {
+          padding: "8px 12px",
+          background: "#eafaf1",
+          color: "#1a7a4a",
+          borderRadius: 8,
+          fontSize: 13,
+        },
+        error: {
+          padding: "8px 12px",
+          background: "#fdecea",
+          color: "#a02020",
+          borderRadius: 8,
+          fontSize: 13,
+        },
+      };
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<RegistrationPage />);
+    </script>
+  </body>
+</html>
