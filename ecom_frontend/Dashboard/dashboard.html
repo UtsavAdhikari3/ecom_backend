@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dashboard</title>
+
+    <!-- React CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial;
+        background: #f4f4f4;
+      }
+
+      nav {
+        background: #111;
+        color: white;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .container {
+        padding: 20px;
+      }
+
+      .card {
+        background: white;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      button {
+        padding: 8px 12px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      class Dashboard extends React.Component {
+        constructor(props) {
+          super(props);
+
+          this.state = {
+            user: null,
+            loading: true,
+            error: null,
+          };
+        }
+
+        componentDidMount() {
+          const token = localStorage.getItem("accessToken");
+
+          if (!token) {
+            this.setState({
+              error: "No token found. Please login.",
+              loading: false,
+            });
+            return;
+          }
+
+          fetch("http://localhost:8000/api/users/me/", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          })
+            .then((res) => {
+              if (!res.ok) {
+                throw new Error("Unauthorized or request failed");
+              }
+              return res.json();
+            })
+            .then((data) => {
+              this.setState({ user: data, loading: false });
+            })
+            .catch((err) => {
+              this.setState({ error: err.message, loading: false });
+            });
+        }
+
+        handleLogout = () => {
+          localStorage.removeItem("accessToken");
+          location.reload();
+        };
+
+        render() {
+          const { user, loading, error } = this.state;
+
+          if (loading) return <h2 style={{ padding: "20px" }}>Loading...</h2>;
+          if (error) return <h2 style={{ padding: "20px" }}>{error}</h2>;
+
+          return (
+            <div>
+              {/* Navbar */}
+              <nav>
+                <h3>Welcome, {user.username}</h3>
+                <button onClick={this.handleLogout}>Logout</button>
+              </nav>
+
+              {/* Dashboard */}
+              <div className="container">
+                <h2>Products</h2>
+
+                <div className="card">💻 Laptop</div>
+                <div className="card">🧠 RAM</div>
+                <div className="card">🎮 Graphics Card</div>
+                <div className="card">⌨️ Keyboard</div>
+              </div>
+            </div>
+          );
+        }
+      }
+
+      ReactDOM.render(<Dashboard />, document.getElementById("root"));
+    </script>
+  </body>
+</html>
