@@ -54,6 +54,8 @@ INSTALLED_APPS = [
     'wallet',
     'orders',
     'payment',
+    'products',
+    'cart',
     "corsheaders"
 ]
 
