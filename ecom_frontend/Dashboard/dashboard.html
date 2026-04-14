@@ -588,6 +588,7 @@
             loadingCart: false,
             cartError: null,
             cartItems: [],
+            totalAmount: null,
           };
           this.fetchUser = this.fetchUser.bind(this);
           this.fetchProducts = this.fetchProducts.bind(this);
@@ -676,6 +677,7 @@
             .then((data) => {
               this.setState({
                 cartItems: data.CartItems || [],
+                totalAmount: data.total_amount,
                 loadingCart: false,
               });
             })
@@ -806,6 +808,7 @@
             productError,
             cart,
             cartItems,
+            totalAmount,
             showCart,
             loadingCart,
             cartError,
@@ -955,6 +958,7 @@
                             <div>{formatPrice(item.price)}</div>
                           </div>
                         ))}
+                        <div>Total Amount: {totalAmount}</div>
                       </div>
                     )}
                   </div>

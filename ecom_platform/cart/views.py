@@ -55,16 +55,28 @@ class GetCartView(APIView):
         try:
             cart = Cart.objects.get(user=user)
         except Cart.DoesNotExist:
-            return Response({"CartItems": []}, status=200)
+            return Response({
+                "CartItems": [],
+                "total_amount": 0
+            }, status=200)
 
         items = cart.items.all()
 
         data = []
+        total_amount = 0
+
         for item in items:
+            subtotal = item.product.price * item.quantity
+            total_amount += subtotal
+
             data.append({
                 "product": item.product.name,
                 "quantity": item.quantity,
-                "price": item.product.price
+                "price": item.product.price,
+                "subtotal": subtotal
             })
 
-        return Response({"CartItems": data}, status=200)
+        return Response({
+            "CartItems": data,
+            "total_amount": total_amount
+        }, status=200)
