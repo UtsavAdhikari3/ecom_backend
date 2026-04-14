@@ -2,29 +2,206 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Login</title>
-    <script
-      src="https://unpkg.com/react@18/umd/react.development.js"
-      crossorigin
-    ></script>
-    <script
-      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
-      crossorigin
-    ></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Maison — Login</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --cream: #faf7f2;
+        --warm: #f2ece0;
+        --sand: #e5d9c5;
+        --stone: #c9b99a;
+        --bark: #7a6248;
+        --ink: #1e1810;
+        --accent: #c0392b;
+        --text: #2c231a;
+        --muted: #9a8878;
+        --border: #ddd3c2;
+      }
+
+      body {
+        background: var(--cream);
+        color: var(--text);
+        font-family: "Jost", sans-serif;
+        font-weight: 300;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .login-container {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 20px;
+      }
+
+      .login-card {
+        background: var(--cream);
+        border: 1px solid var(--border);
+        padding: 48px;
+        width: 100%;
+        max-width: 440px;
+        position: relative;
+      }
+
+      .brand-logo {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 32px;
+        font-weight: 600;
+        letter-spacing: 8px;
+        text-transform: uppercase;
+        color: var(--ink);
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .form-header {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+
+      .form-title {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 28px;
+        font-weight: 300;
+        color: var(--ink);
+        margin-bottom: 8px;
+      }
+
+      .form-subtitle {
+        font-size: 12px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .field {
+        margin-bottom: 24px;
+      }
+
+      .label {
+        display: block;
+        font-size: 11px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--bark);
+        margin-bottom: 8px;
+      }
+
+      .input {
+        width: 100%;
+        padding: 12px 16px;
+        background: var(--warm);
+        border: 1px solid var(--border);
+        font-family: "Jost", sans-serif;
+        font-size: 14px;
+        color: var(--ink);
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      .input:focus {
+        border-color: var(--bark);
+      }
+
+      .btn-submit {
+        width: 100%;
+        background: var(--ink);
+        color: var(--cream);
+        padding: 14px;
+        border: none;
+        font-family: "Jost", sans-serif;
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background 0.2s;
+        margin-top: 8px;
+      }
+
+      .btn-submit:hover {
+        background: var(--bark);
+      }
+
+      .btn-submit:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .error-msg {
+        background: #fdf2f2;
+        color: var(--accent);
+        font-size: 12px;
+        padding: 12px;
+        border: 1px solid #f9d7d7;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .form-footer {
+        margin-top: 32px;
+        text-align: center;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+      }
+
+      .footer-link {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 12px;
+        letter-spacing: 1px;
+        transition: color 0.2s;
+      }
+
+      .footer-link:hover {
+        color: var(--ink);
+      }
+
+      footer {
+        background: var(--ink);
+        color: var(--stone);
+        padding: 20px 48px; /* Slightly tighter padding */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0; /* Ensures footer doesn't get squashed */
+      }
+
+      .footer-copy {
+        font-size: 12px;
+        color: var(--muted);
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
 
     <script type="text/babel">
-      class LoginPage extends React.Component {
+      const { Component } = React;
+
+      class LoginPage extends Component {
         constructor(props) {
           super(props);
           this.state = {
             username: "",
             password: "",
             loading: false,
-            successMsg: "",
             errorMsg: "",
           };
         }
@@ -36,8 +213,7 @@
         handleSubmit = async (e) => {
           e.preventDefault();
           const { username, password } = this.state;
-
-          this.setState({ loading: true, successMsg: "", errorMsg: "" });
+          this.setState({ loading: true, errorMsg: "" });
 
           try {
             const response = await fetch(
@@ -52,179 +228,81 @@
             const data = await response.json();
 
             if (!response.ok) {
-              throw new Error(
-                data.message || "Login failed. Please check your credentials."
-              );
+              throw new Error(data.message || "Invalid credentials");
             }
 
-            // Store token if your API returns one
             if (data.access) {
               localStorage.setItem("accessToken", data.access);
               localStorage.setItem("refreshToken", data.refresh);
             }
 
-            this.setState({ successMsg: "Logged in successfully!" });
-
-            // Redirect after successful login
             window.location.href = "../Dashboard/dashboard.html";
           } catch (err) {
-            this.setState({ errorMsg: err.message });
-          } finally {
-            this.setState({ loading: false });
+            this.setState({ errorMsg: err.message, loading: false });
           }
         };
 
         render() {
-          const { username, password, loading, successMsg, errorMsg } =
-            this.state;
+          const { username, password, loading, errorMsg } = this.state;
 
           return (
-            <div style={styles.wrapper}>
-              <div style={styles.card}>
-                <h2 style={styles.title}>Welcome back</h2>
-                <p style={styles.subtitle}>Sign in to your account</p>
+            <React.Fragment>
+              <div className="login-container">
+                <div className="login-card">
+                  <div className="brand-logo">Maison</div>
 
-                <form onSubmit={this.handleSubmit}>
-                  <div style={styles.field}>
-                    <label style={styles.label}>Username</label>
-                    <input
-                      style={styles.input}
-                      type="text"
-                      name="username"
-                      value={username}
-                      onChange={this.handleChange}
-                      placeholder="johndoe"
-                      required
-                    />
+                  <div className="form-header">
+                    <h2 className="form-title">Welcome back</h2>
+                    <p className="form-subtitle">Sign in to your account</p>
                   </div>
 
-                  <div style={styles.field}>
-                    <label style={styles.label}>Password</label>
-                    <input
-                      style={styles.input}
-                      type="password"
-                      name="password"
-                      value={password}
-                      onChange={this.handleChange}
-                      placeholder="Your password"
-                      required
-                    />
-                    <a href="/forgot-password" style={styles.forgot}>
-                      Forgot password?
+                  {errorMsg && <div className="error-msg">{errorMsg}</div>}
+
+                  <form onSubmit={this.handleSubmit}>
+                    <div className="field">
+                      <label className="label">Username</label>
+                      <input
+                        className="input"
+                        type="text"
+                        name="username"
+                        value={username}
+                        onChange={this.handleChange}
+                        required
+                      />
+                    </div>
+
+                    <div className="field">
+                      <label className="label">Password</label>
+                      <input
+                        className="input"
+                        type="password"
+                        name="password"
+                        value={password}
+                        onChange={this.handleChange}
+                        required
+                      />
+                    </div>
+
+                    <button
+                      className="btn-submit"
+                      type="submit"
+                      disabled={loading}
+                    >
+                      {loading ? "Authenticating..." : "Sign In"}
+                    </button>
+                  </form>
+
+                  <div className="form-footer">
+                    <a href="../Register/register.html" className="footer-link">
+                      Don't have an account? Create one →
                     </a>
                   </div>
-
-                  {successMsg && <p style={styles.success}>{successMsg}</p>}
-                  {errorMsg && <p style={styles.error}>{errorMsg}</p>}
-
-                  <button
-                    type="submit"
-                    style={styles.button}
-                    disabled={loading}
-                  >
-                    {loading ? "Signing in…" : "Sign in"}
-                  </button>
-                </form>
-
-                <div style={styles.divider}>
-                  <hr style={styles.hr} />
-                  <span style={styles.dividerText}>don't have an account?</span>
-                  <hr style={styles.hr} />
                 </div>
-
-                <p style={styles.footer}>
-                  <a href="../Register/register.html" style={styles.link}>
-                    Create one here →
-                  </a>
-                </p>
               </div>
-            </div>
+            </React.Fragment>
           );
         }
       }
-
-      const styles = {
-        wrapper: {
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",
-          fontFamily: "system-ui, sans-serif",
-          background: "#f5f5f5",
-        },
-        card: {
-          background: "#fff",
-          borderRadius: 12,
-          padding: "2rem",
-          width: "100%",
-          maxWidth: 420,
-          boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
-        },
-        title: { margin: "0 0 4px", fontSize: 22, fontWeight: 500 },
-        subtitle: { margin: "0 0 1.5rem", fontSize: 14, color: "#666" },
-        field: { marginBottom: "1rem" },
-        label: {
-          display: "block",
-          fontSize: 13,
-          fontWeight: 500,
-          color: "#555",
-          marginBottom: 5,
-        },
-        input: {
-          width: "100%",
-          height: 38,
-          padding: "0 10px",
-          fontSize: 14,
-          border: "1px solid #ddd",
-          borderRadius: 8,
-          outline: "none",
-          boxSizing: "border-box",
-        },
-        forgot: {
-          display: "block",
-          textAlign: "right",
-          fontSize: 12,
-          color: "#534AB7",
-          marginTop: 4,
-          textDecoration: "none",
-        },
-        button: {
-          marginTop: "0.5rem",
-          width: "100%",
-          height: 40,
-          background: "#534AB7",
-          color: "#fff",
-          border: "none",
-          borderRadius: 8,
-          fontSize: 14,
-          fontWeight: 500,
-          cursor: "pointer",
-        },
-        success: {
-          padding: "8px 12px",
-          background: "#eafaf1",
-          color: "#1a7a4a",
-          borderRadius: 8,
-          fontSize: 13,
-        },
-        error: {
-          padding: "8px 12px",
-          background: "#fdecea",
-          color: "#a02020",
-          borderRadius: 8,
-          fontSize: 13,
-        },
-        divider: {
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-          margin: "1.25rem 0",
-        },
-        hr: { flex: 1, border: "none", borderTop: "1px solid #eee" },
-        dividerText: { fontSize: 12, color: "#aaa", whiteSpace: "nowrap" },
-        footer: { textAlign: "center", fontSize: 13, color: "#666", margin: 0 },
-        link: { color: "#534AB7", textDecoration: "none" },
-      };
 
       const root = ReactDOM.createRoot(document.getElementById("root"));
       root.render(<LoginPage />);
