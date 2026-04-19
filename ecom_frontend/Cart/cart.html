@@ -498,6 +498,7 @@
           this.handleDelete = this.handleDelete.bind(this);
           this.handleLogout = this.handleLogout.bind(this);
           this.showToast = this.showToast.bind(this);
+          this.handleCheckout = this.handleCheckout.bind(this);
         }
 
         componentDidMount() {
@@ -577,6 +578,31 @@
             });
         }
 
+        handleCheckout() {
+          const token = localStorage.getItem("accessToken");
+
+          if (!token) {
+            this.showToast("Please login first");
+            return;
+          }
+
+          fetch("http://localhost:8000/api/orders/checkout/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          })
+            .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
+            .then(({ ok, data }) => {
+              if (!ok) throw new Error(data.error || "Checkout failed");
+
+              this.showToast("Order placed successfully 🧾");
+            })
+            .catch((err) => {
+              this.showToast(err.message || "Checkout failed");
+            });
+        }
         handleLogout() {
           localStorage.removeItem("accessToken");
           location.href = "../Login/login.html";
@@ -841,7 +867,10 @@
                               : "—"}
                           </span>
                         </div>
-                        <button className="checkout-btn">
+                        <button
+                          className="checkout-btn"
+                          onClick={this.handleCheckout}
+                        >
                           Proceed to Checkout
                         </button>
                         <div style={{ textAlign: "center", marginTop: "14px" }}>
