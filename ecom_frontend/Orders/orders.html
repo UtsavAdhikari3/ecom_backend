@@ -8,6 +8,7 @@
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap"
       rel="stylesheet"
     />
+    <script src="../Components/navbar.js" defer></script>
     <style>
       *,
       *::before,
@@ -44,97 +45,6 @@
         min-height: 100vh;
       }
 
-      nav {
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        background: var(--cream);
-        border-bottom: 1px solid var(--border);
-        display: grid;
-        grid-template-columns: 1fr auto 1fr;
-        align-items: center;
-        padding: 0 48px;
-        height: 68px;
-      }
-      .nav-logo {
-        text-align: center;
-        font-family: "Cormorant Garamond", serif;
-        font-size: 30px;
-        font-weight: 600;
-        letter-spacing: 6px;
-        text-transform: uppercase;
-        color: var(--ink);
-      }
-      .nav-left {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-      .nav-user-avatar {
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        background: var(--bark);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: "Cormorant Garamond", serif;
-        font-size: 15px;
-        color: var(--cream);
-        font-weight: 600;
-        flex-shrink: 0;
-      }
-      .nav-user-name {
-        font-size: 13px;
-        color: var(--text);
-        letter-spacing: 0.3px;
-      }
-      .nav-user-role {
-        font-size: 11px;
-        color: var(--muted);
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-      }
-      .nav-actions {
-        display: flex;
-        gap: 16px;
-        align-items: center;
-        justify-content: flex-end;
-      }
-      .nav-link {
-        color: var(--muted);
-        text-decoration: none;
-        font-size: 12px;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        transition: color 0.2s;
-        cursor: pointer;
-        background: none;
-        border: none;
-        font-family: "Jost", sans-serif;
-        font-weight: 300;
-      }
-      .nav-link:hover {
-        color: var(--ink);
-      }
-      .logout-btn {
-        background: none;
-        border: 1px solid var(--border);
-        color: var(--muted);
-        padding: 7px 18px;
-        border-radius: 2px;
-        font-family: "Jost", sans-serif;
-        font-size: 11px;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-      .logout-btn:hover {
-        border-color: var(--accent);
-        color: var(--accent);
-      }
-
       .page {
         padding: 48px;
         max-width: 900px;
@@ -163,7 +73,6 @@
         line-height: 1.1;
       }
 
-      /* Order cards */
       .order-card {
         background: var(--warm);
         border: 1px solid var(--border);
@@ -208,7 +117,6 @@
         color: var(--ink);
       }
 
-      /* Status badges */
       .status-badge {
         display: inline-flex;
         align-items: center;
@@ -258,7 +166,6 @@
         border: 1px solid var(--stone);
       }
 
-      /* Expandable items */
       .order-items {
         border-top: 1px solid var(--border);
         padding: 0 24px;
@@ -309,7 +216,6 @@
         transform: rotate(180deg);
       }
 
-      /* Order total footer row */
       .order-footer-total {
         display: flex;
         justify-content: flex-end;
@@ -330,7 +236,6 @@
         color: var(--ink);
       }
 
-      /* Loading skeleton */
       .sk-row {
         display: flex;
         justify-content: space-between;
@@ -356,7 +261,6 @@
         }
       }
 
-      /* Error state */
       .error-box {
         background: var(--accent-lt);
         border: 1px solid #dbb;
@@ -382,7 +286,6 @@
         font-family: "Jost", sans-serif;
       }
 
-      /* Empty state */
       .empty-state {
         text-align: center;
         padding: 80px 48px;
@@ -451,7 +354,6 @@
         color: var(--muted);
       }
 
-      /* Toast */
       .toast {
         position: fixed;
         bottom: 32px;
@@ -479,9 +381,6 @@
       }
 
       @media (max-width: 768px) {
-        nav {
-          padding: 0 20px;
-        }
         .page {
           padding: 32px 20px;
         }
@@ -498,21 +397,8 @@
     </style>
   </head>
   <body>
-    <nav>
-      <div class="nav-left">
-        <div class="nav-user-avatar" id="nav-avatar">…</div>
-        <div>
-          <div class="nav-user-name" id="nav-name">…</div>
-          <div class="nav-user-role" id="nav-email"></div>
-        </div>
-      </div>
-      <div class="nav-logo">Maison</div>
-      <div class="nav-actions">
-        <a href="../Dashboard/dashboard.html" class="nav-link">← Shop</a>
-        <a href="../Cart/cart.html" class="nav-link">Bag</a>
-        <button class="logout-btn" id="logout-btn">Logout</button>
-      </div>
-    </nav>
+    <!-- Navbar component handles user info, logout, and active link highlighting -->
+    <maison-navbar active="orders"></maison-navbar>
 
     <div class="page">
       <div class="page-header">
@@ -612,10 +498,6 @@
         return "$" + parseFloat(p).toFixed(2);
       }
 
-      function getInitials(n) {
-        return (n || "?").slice(0, 2).toUpperCase();
-      }
-
       function getEmoji(name) {
         const s = (name || "").toLowerCase();
         if (s.match(/shirt|tee|cloth|wear|fashion|dress|jeans|jacket|hoodie/))
@@ -648,26 +530,6 @@
         const chev = document.getElementById("chev-" + id);
         items.classList.toggle("open");
         chev.classList.toggle("open");
-      }
-
-      function fetchUser() {
-        const token = localStorage.getItem("accessToken");
-        if (!token) return;
-        fetch("http://localhost:8000/api/users/me/", {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-          .then((r) => (r.ok ? r.json() : null))
-          .then((data) => {
-            if (!data) return;
-            document.getElementById("nav-avatar").textContent = getInitials(
-              data.username || data.first_name || "U"
-            );
-            document.getElementById("nav-name").textContent =
-              data.first_name || data.username || "User";
-            if (data.email)
-              document.getElementById("nav-email").textContent = data.email;
-          })
-          .catch(() => {});
       }
 
       function fetchOrders() {
@@ -774,12 +636,8 @@
           });
       }
 
-      document.getElementById("logout-btn").addEventListener("click", () => {
-        localStorage.removeItem("accessToken");
-        location.href = "../Login/login.html";
-      });
-
-      fetchUser();
+      // The navbar component handles fetchUser() and logout internally.
+      // This page only needs to fetch its own data.
       fetchOrders();
     </script>
   </body>

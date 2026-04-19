@@ -7,6 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="../Components/navbar.js" defer></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap"
       rel="stylesheet"
@@ -872,49 +873,7 @@
 
           return (
             <Fragment>
-              {/* NAV */}
-              <nav>
-                {/* Left: user info */}
-                <div className="nav-user">
-                  <div className="nav-user-avatar">{initials}</div>
-                  <div>
-                    <div className="nav-user-name">{displayName}</div>
-                    {user && user.email && (
-                      <div className="nav-user-role">{user.email}</div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Center: logo */}
-                <div className="nav-logo">Maison</div>
-
-                {/* Right: actions */}
-                <div className="nav-actions">
-                  <a href="../index.html" className="nav-home-link">
-                    ← Shop
-                  </a>
-
-                  {/* Cart icon with badge */}
-                  <a
-                    href="../Cart/cart.html"
-                    className="cart-icon-btn"
-                    title="View Cart"
-                  >
-                    <CartIcon />
-                    {cartCount > 0 && (
-                      <span className="cart-badge">
-                        {cartCount > 99 ? "99+" : cartCount}
-                      </span>
-                    )}
-                  </a>
-
-                  <button className="logout-btn" onClick={this.handleLogout}>
-                    Logout
-                  </button>
-                </div>
-              </nav>
-
-              {/* PAGE */}
+              <maison-navbar active="dashboard"></maison-navbar>
               <div className="page">
                 <div className="page-header">
                   <div>

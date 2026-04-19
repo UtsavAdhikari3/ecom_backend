@@ -7,6 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="../Components/navbar.js" defer></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap"
       rel="stylesheet"
@@ -683,28 +684,7 @@
 
           return (
             <Fragment>
-              <nav>
-                <div className="nav-left">
-                  <div className="nav-user-avatar">{initials}</div>
-                  <div>
-                    <div className="nav-user-name">{displayName}</div>
-                    {user && user.email && (
-                      <div className="nav-user-role">{user.email}</div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="nav-logo">Maison</div>
-
-                <div className="nav-actions">
-                  <a href="../Dashboard/dashboard.html" className="nav-link">
-                    ← Shop
-                  </a>
-                  <button className="logout-btn" onClick={this.handleLogout}>
-                    Logout
-                  </button>
-                </div>
-              </nav>
+              <maison-navbar active="cart"></maison-navbar>
 
               <div className="page">
                 <div className="page-header">
