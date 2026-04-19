@@ -103,6 +103,7 @@
         display: flex;
         gap: 16px;
         align-items: center;
+        justify-content: flex-end;
       }
       .nav-home-link {
         color: var(--muted);
@@ -115,6 +116,46 @@
       .nav-home-link:hover {
         color: var(--ink);
       }
+
+      /* Cart icon */
+      .cart-icon-btn {
+        position: relative;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--ink);
+        transition: color 0.2s;
+        text-decoration: none;
+      }
+      .cart-icon-btn:hover {
+        color: var(--bark);
+      }
+      .cart-icon-btn svg {
+        display: block;
+      }
+      .cart-badge {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        background: var(--accent);
+        color: white;
+        font-size: 9px;
+        font-weight: 500;
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Jost", sans-serif;
+        line-height: 1;
+        pointer-events: none;
+      }
+
       .logout-btn {
         background: none;
         border: 1px solid var(--border);
@@ -220,7 +261,6 @@
         grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
         gap: 24px;
       }
-
       .product-card {
         cursor: pointer;
       }
@@ -302,7 +342,6 @@
       .quick-add.added {
         background: #2e7d32;
       }
-
       .product-meta {
         display: flex;
         justify-content: space-between;
@@ -506,6 +545,26 @@
         return username.slice(0, 2).toUpperCase();
       }
 
+      /* Cart Icon SVG */
+      function CartIcon() {
+        return (
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="9" cy="21" r="1" />
+            <circle cx="20" cy="21" r="1" />
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+          </svg>
+        );
+      }
+
       /* ── Skeleton ── */
       class SkeletonCard extends Component {
         render() {
@@ -580,26 +639,37 @@
             loadingProducts: true,
             userError: null,
             productError: null,
-            cart: [],
             toast: null,
             search: "",
             filter: "All",
-            showCart: false,
-            loadingCart: false,
-            cartError: null,
-            cartItems: [],
-            totalAmount: null,
+            cartCount: 0,
           };
           this.fetchUser = this.fetchUser.bind(this);
           this.fetchProducts = this.fetchProducts.bind(this);
           this.handleLogout = this.handleLogout.bind(this);
           this.handleAdd = this.handleAdd.bind(this);
-          this.fetchCart = this.fetchCart.bind(this);
+          this.fetchCartCount = this.fetchCartCount.bind(this);
         }
 
         componentDidMount() {
           this.fetchUser();
           this.fetchProducts();
+          this.fetchCartCount();
+        }
+
+        fetchCartCount() {
+          const token = localStorage.getItem("accessToken");
+          if (!token) return;
+          fetch("http://localhost:8000/api/cart/items/", {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+            .then((res) => (res.ok ? res.json() : null))
+            .then((data) => {
+              if (data && data.CartItems) {
+                this.setState({ cartCount: data.CartItems.length });
+              }
+            })
+            .catch(() => {});
         }
 
         fetchUser() {
@@ -645,50 +715,6 @@
             );
         }
 
-        fetchCart() {
-          const token = localStorage.getItem("accessToken");
-
-          if (!token) {
-            this.setState({ toast: "Please log in first" });
-            this._t = setTimeout(() => this.setState({ toast: null }), 2800);
-            return;
-          }
-
-          this.setState({
-            loadingCart: true,
-            cartError: null,
-            showCart: true,
-          });
-
-          fetch("http://localhost:8000/api/cart/items/", {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          })
-            .then((res) => {
-              return res.json().then((data) => {
-                if (!res.ok) {
-                  throw new Error(data.error || "Could not load cart");
-                }
-                return data;
-              });
-            })
-            .then((data) => {
-              this.setState({
-                cartItems: data.CartItems || [],
-                totalAmount: data.total_amount,
-                loadingCart: false,
-              });
-            })
-            .catch((err) => {
-              this.setState({
-                cartError: err.message,
-                loadingCart: false,
-              });
-            });
-        }
-
         handleLogout() {
           localStorage.removeItem("accessToken");
           location.reload();
@@ -696,7 +722,6 @@
 
         handleAdd(product) {
           const token = localStorage.getItem("accessToken");
-
           if (!token) {
             this.setState({ toast: "Please log in first" });
             this._t = setTimeout(() => this.setState({ toast: null }), 2800);
@@ -709,31 +734,22 @@
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({
-              product_id: product.id,
-              quantity: 1,
-            }),
+            body: JSON.stringify({ product_id: product.id, quantity: 1 }),
           })
-            .then((res) => {
-              return res.json().then((data) => {
-                if (!res.ok) {
-                  throw new Error(data.error || "Could not add item to cart");
-                }
-                return data;
-              });
-            })
-            .then((data) => {
+            .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
+            .then(({ ok, data }) => {
+              if (!ok)
+                throw new Error(data.error || "Could not add item to cart");
               if (this._t) clearTimeout(this._t);
-              this.setState({
+              this.setState((prev) => ({
                 toast: `${product.name} added to your bag`,
-              });
+                cartCount: prev.cartCount + 1,
+              }));
               this._t = setTimeout(() => this.setState({ toast: null }), 2800);
             })
             .catch((err) => {
               if (this._t) clearTimeout(this._t);
-              this.setState({
-                toast: err.message,
-              });
+              this.setState({ toast: err.message });
               this._t = setTimeout(() => this.setState({ toast: null }), 2800);
             });
         }
@@ -806,20 +822,14 @@
             userError,
             loadingProducts,
             productError,
-            cart,
-            cartItems,
-            totalAmount,
-            showCart,
-            loadingCart,
-            cartError,
             toast,
             search,
             filter,
+            cartCount,
           } = this.state;
           const categories = this.getCategories();
           const filtered = this.getFiltered();
 
-          /* No token — redirect message */
           if (!loadingUser && userError === "no_token") {
             return (
               <div className="state-box">
@@ -835,7 +845,6 @@
             );
           }
 
-          /* Auth error */
           if (!loadingUser && userError && userError !== "no_token") {
             return (
               <div className="state-box">
@@ -884,9 +893,21 @@
                   <a href="../index.html" className="nav-home-link">
                     ← Shop
                   </a>
-                  <button className="logout-btn" onClick={this.fetchCart}>
-                    View Cart
-                  </button>
+
+                  {/* Cart icon with badge */}
+                  <a
+                    href="../Cart/cart.html"
+                    className="cart-icon-btn"
+                    title="View Cart"
+                  >
+                    <CartIcon />
+                    {cartCount > 0 && (
+                      <span className="cart-badge">
+                        {cartCount > 99 ? "99+" : cartCount}
+                      </span>
+                    )}
+                  </a>
+
                   <button className="logout-btn" onClick={this.handleLogout}>
                     Logout
                   </button>
@@ -895,74 +916,6 @@
 
               {/* PAGE */}
               <div className="page">
-                {showCart && (
-                  <div
-                    style={{
-                      marginBottom: "24px",
-                      padding: "20px",
-                      background: "var(--warm)",
-                      border: "1px solid var(--border)",
-                      borderRadius: "12px",
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontFamily: '"Cormorant Garamond", serif',
-                        fontSize: "28px",
-                        marginBottom: "12px",
-                        color: "var(--ink)",
-                      }}
-                    >
-                      Your Cart
-                    </div>
-
-                    {loadingCart && <div>Loading cart...</div>}
-
-                    {cartError && (
-                      <div style={{ color: "var(--accent)" }}>
-                        Error loading cart: {cartError}
-                      </div>
-                    )}
-
-                    {!loadingCart && !cartError && cartItems.length === 0 && (
-                      <div style={{ color: "var(--muted)" }}>
-                        Your cart is empty.
-                      </div>
-                    )}
-
-                    {!loadingCart && !cartError && cartItems.length > 0 && (
-                      <div>
-                        {cartItems.map((item, index) => (
-                          <div
-                            key={index}
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              padding: "10px 0",
-                              borderBottom: "1px solid var(--border)",
-                            }}
-                          >
-                            <div>
-                              <div style={{ fontWeight: "500" }}>
-                                {item.product}
-                              </div>
-                              <div
-                                style={{
-                                  fontSize: "12px",
-                                  color: "var(--muted)",
-                                }}
-                              >
-                                Quantity: {item.quantity}
-                              </div>
-                            </div>
-                            <div>{formatPrice(item.price)}</div>
-                          </div>
-                        ))}
-                        <div>Total Amount: {totalAmount}</div>
-                      </div>
-                    )}
-                  </div>
-                )}
                 <div className="page-header">
                   <div>
                     <div className="page-label">✦ Your Store</div>

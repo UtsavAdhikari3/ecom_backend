@@ -46,6 +46,35 @@ class AddToCartView(APIView):
             "quantity": cart_item.quantity
         }, status=200)
 
+
+class DeleteCartItemView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        item_id = request.data.get("id")
+
+        if not item_id:
+            return Response(
+                {"error": "Item ID required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            item = CartItem.objects.get(id=item_id, cart__user = user)
+            item.delete()
+
+            return Response({
+                "success": True,
+                "message": "Item deleted"
+            })
+
+        except CartItem.DoesNotExist:
+            return Response(
+                {"error": "Item not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
 class GetCartView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -70,6 +99,7 @@ class GetCartView(APIView):
             total_amount += subtotal
 
             data.append({
+                "id":item.id,
                 "product": item.product.name,
                 "quantity": item.quantity,
                 "price": item.product.price,
