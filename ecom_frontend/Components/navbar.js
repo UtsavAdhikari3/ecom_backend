@@ -117,7 +117,7 @@ class MaisonNavbar extends HTMLElement {
   _loadUser() {
     const token = localStorage.getItem("accessToken");
     if (!token) return;
-    fetch("http://localhost:8000/api/users/me/", {
+    fetch("http://localhost:8001/api/users/me/", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => (r.ok ? r.json() : null))

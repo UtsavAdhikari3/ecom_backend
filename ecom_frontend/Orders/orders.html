@@ -547,7 +547,7 @@
         document.getElementById("empty-state").style.display = "none";
         document.getElementById("orders-list").innerHTML = "";
 
-        fetch("http://localhost:8000/api/orders/", {
+        fetch("http://localhost:8001/api/orders/", {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
