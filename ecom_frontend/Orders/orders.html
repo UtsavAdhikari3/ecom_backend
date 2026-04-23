@@ -572,7 +572,7 @@
           };
 
           localStorage.setItem("wallet_payment", JSON.stringify(payload));
-          const url = `http://127.0.0.1:5500/walletfrontend/Login/login.html?ref=${reference_id}&amount=${amount}`;
+          const url = `http://127.0.0.1:5500/walletfrontend/MerchantTransfer/MerchantTransfer.html?ref=${reference_id}&amount=${amount}`;
 
           window.open(url, "_blank");
         } catch (err) {
@@ -668,7 +668,7 @@
                           letter-spacing:1px;
                           text-transform:uppercase;
                         ">
-                        Pay
+                        Pay with walletwo
                       </button>
                     `
                         : ""
