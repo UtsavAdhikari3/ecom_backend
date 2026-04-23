@@ -531,6 +531,55 @@
         items.classList.toggle("open");
         chev.classList.toggle("open");
       }
+      async function handlePay(orderId) {
+        const token = localStorage.getItem("accessToken");
+
+        if (!token) {
+          showToast("Please log in first");
+          return;
+        }
+
+        try {
+          // 1. Call ecom backend
+          const res = await fetch(
+            "http://localhost:8001/api/payment/initiate_payment/",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                order_id: orderId,
+              }),
+            }
+          );
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            showToast(data.error || "Failed to initiate payment");
+            return;
+          }
+
+          const { reference_id, amount, method } = data;
+
+          const payload = {
+            reference_id,
+            amount,
+            order_id: orderId,
+            method: method || "WALLET",
+          };
+
+          localStorage.setItem("wallet_payment", JSON.stringify(payload));
+          const url = `http://127.0.0.1:5500/walletfrontend/Login/login.html?ref=${reference_id}&amount=${amount}`;
+
+          window.open(url, "_blank");
+        } catch (err) {
+          console.error(err);
+          showToast("Something went wrong");
+        }
+      }
 
       function fetchOrders() {
         const token = localStorage.getItem("accessToken");
@@ -604,12 +653,35 @@
               }</div>
                   </div>
                   <div class="order-right">
+
+                    ${
+                      order.status === "PN"
+                        ? `
+                      <button onclick="handlePay(${order.order_id})"
+                        style="
+                          background:#1e1810;
+                          color:white;
+                          border:none;
+                          padding:6px 12px;
+                          cursor:pointer;
+                          font-size:11px;
+                          letter-spacing:1px;
+                          text-transform:uppercase;
+                        ">
+                        Pay
+                      </button>
+                    `
+                        : ""
+                    }
+
                     <span class="status-badge ${statusClass}">
                       <span class="status-dot"></span>${order.status}
                     </span>
+
                     <div class="order-total">${formatPrice(
                       order.total_amount
                     )}</div>
+
                     <span class="chevron" id="chev-${order.order_id}">▼</span>
                   </div>
                 </div>

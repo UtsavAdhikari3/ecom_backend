@@ -7,5 +7,5 @@ urlpatterns = [
     path('orders/', include('orders.urls')),
     # path('wallet/', include('wallet.urls')),
     # path('orders/', include('orders.urls')),
-    # path('payment/', include('payment.urls')),
+    path('payment/', include('payment.urls')),
 ]
