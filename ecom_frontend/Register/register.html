@@ -11,6 +11,8 @@
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap"
       rel="stylesheet"
     />
+    <script src="../Config/config.js" defer></script>
+
     <style>
       *,
       *::before,
@@ -261,14 +263,11 @@
           this.setState({ loading: true, successMsg: "", errorMsg: "" });
 
           try {
-            const response = await fetch(
-              "http://localhost:8001/api/users/register/",
-              {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, email, password }),
-              }
-            );
+            const response = await fetch(API.REGISTER, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username, email, password }),
+            });
 
             const data = await response.json();
 
