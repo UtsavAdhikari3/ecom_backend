@@ -1,5 +1,5 @@
-const BASE_URL = "http://localhost:8001";
-const WALLET_URL = "http://localhost:8001";
+const BASE_URL = "https://apiecom.adhikariutsav.com.np";
+const WALLET_URL = "https://apiwallet.adhikariutsav.com.np";
 
 const API = {
   LOGIN: BASE_URL + "/api/users/login/",
